@@ -27,10 +27,19 @@ def extract(d):
 
 def neighbor():
 
-    addr = socket.gethostbyname(config[REMOTE_NEIGHBOR])
-    print("Fetching neighbor at {}:{} ({})".format(config[REMOTE_NEIGHBOR],
-                                                   config[REMOTE_PORT],
-                                                   addr))
+    # get address for information purposes
+    try:
+        addr = socket.gethostbyname(config[REMOTE_NEIGHBOR])
+        print("Fetching neighbor at {}:{} ({})".format(config[REMOTE_NEIGHBOR],
+                                                       config[REMOTE_PORT],
+                                                       addr))
+    except socket.gaierror as e:
+        status_code = 500
+        return_data = str(e)
+        return {'status': status_code,
+                'neighbor_url': 'http://{}:{}'.format(config[REMOTE_NEIGHBOR],
+                                                      config[REMOTE_PORT]),
+                'error': return_data}
 
     try:
         r = requests.get('http://{}:{}'.format(config[REMOTE_NEIGHBOR],
